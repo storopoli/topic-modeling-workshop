@@ -1,0 +1,154 @@
+---
+title: "Workshop de Topic Modeling"
+subtitle: "Slides -- [.white[storopoli.io/topic-modeling-workshop]](https://storopoli.io/topic-modeling-workshop)"
+author: 
+  - "Jose Storopoli, PhD"
+  - '`r knitr::include_graphics(c("images/UNINOVE_CIS.png", "images/UNINOVE_PPGA.png"), dpi = 400)`'
+  - "[![CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg)](http://creativecommons.org/licenses/by-sa/4.0/)"
+date: "08/02/2021"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: css/xaringan-themer.css
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+class: animated, fadeIn
+layout: true
+
+---
+```{r setup, include=FALSE}
+library(DiagrammeR)
+options(htmltools.dir.version = FALSE,
+        htmltools.preserve.raw = FALSE)
+knitr::opts_chunk$set(fig.retina = 4,
+                      warning = FALSE,
+                      message = FALSE,
+                      echo = FALSE)
+set.seed(123)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+
+extra_css <- list(
+  ".tiny" = list("font-size" = "40%"),
+  ".small" = list("font-size" = "70%"),
+  ".large" = list("font-size" = "130%"),
+  ".xlarge" = list("font-size" = "200%"),
+  ".full-width" = list(
+    display = "flex",
+    width   = "100%",
+    flex    = "1 1 auto"
+  ),
+  "white" = list("color" = "white !important")
+)
+
+# UNINOVE Colors
+style_mono_accent(
+  base_color = "#29427A",
+  header_font_google = google_font("Josefin Sans"),
+  text_font_google   = google_font("Montserrat", "300", "300i"),
+  code_font_google   = google_font("Fira Mono"),
+  text_font_size     = "1.5em",
+  footnote_font_size = "0.4em",
+  extra_css = extra_css,
+  outfile = "css/xaringan-themer.css"
+)
+```
+
+```{r xaringan-logo, echo=FALSE}
+# xaringanExtra tile view press key "O"
+xaringanExtra::use_tile_view()
+
+xaringanExtra::use_logo(
+  image_url = "https://raw.githubusercontent.com/storopoli/UNINOVE-xaringan-theme/master/resources/uninove.png",
+  link_url = "https://www.uninove.br",
+  width = "110px",
+  height = "55px")
+
+xaringanExtra::use_fit_screen()
+#xaringanExtra::use_animate_css()
+xaringanExtra::use_tachyons()
+
+# xaringanExtra webcam press key "W"
+xaringanExtra::use_webcam()
+```
+
+# Slide 1
+
+---
+
+# Pré-processamento de Texto
+
+```{r graph-text-preprocessing, out.width='100%'}
+grViz("
+ digraph text_preprocessing {
+  graph [overlap = false,
+         fontsize = 12,
+         rankdir = LR]
+  node [shape = oval,
+        fontname = Helvetica]
+  A [label = 'Dados\nObservados']
+  node [shape = box,
+        fontname = Helvetica]
+  B [label = 'Média']; C [label = 'Mediana']; D [label = 'Moda']; E [label = 'Desvio\nPadrão']
+  A -> {B C D E} [dir = forward,
+                    tailport = 'e',
+                    headport = 'w']
+} 
+")
+```
+
+---
+class: inverse, middle, center
+
+# Change of Theme
+
+`r icons::icon_style(icons::fontawesome("chart-line"), scale = 6, fill = "white")`
+
+---
+# Slide 2
+
+---
+class: inverse, middle
+
+```{r closing-thought, out.width='100%'}
+# Closing thought some nice image
+#knitr::include_graphics("images/great_power.png")
+```
+
+---
+# Créditos!
+
+Slides criado pelo pacote R [`xaringan`](https://github.com/yihui/xaringan).
+
+Código Fonte dos Slides disponível no GitHub [storopoli/topic-modeling-workshop](https://github.com/storopoli/topic-modeling-workshop).
+
+.pull-left[
+```{r profile-pic, out.width='70%', fig.align='left'}
+knitr::include_graphics("images/Profile Pic.png")
+```
+
+[![CC BY-SA 4.0][cc-by-sa-image]][cc-by-sa]
+]
+
+.pull-right[
+[`r icons::fontawesome("globe")` storopoli.io](https://storopoli.io)
+
+[`r icons::fontawesome("linkedin")` @storopoli](https://www.linkedin.com/in/storopoli/) 
+
+[`r icons::fontawesome("twitter")` @JoseStoropoli](https://www.twitter.com/JoseStoropoli)
+
+[`r icons::fontawesome("github")` @storopoli](http://github.com/storopoli)  
+
+[`r icons::fontawesome("paper-plane")` josees@uni9.pro.br](mailto:josees@uni9.pro.br)
+
+]
+
+[cc-by-sa]: http://creativecommons.org/licenses/by-sa/4.0/
+[cc-by-sa-image]: https://licensebuttons.net/l/by-sa/4.0/88x31.png
+[cc-by-sa-shield]: https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg
