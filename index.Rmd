@@ -248,7 +248,7 @@ Kaggle - https://www.kaggle.com/paultimothymooney/lord-of-the-rings-data
 ---
 # Preparação dos dados
 .pull-left[
-```{r data-prep, echo=TRUE, eval=FALSE}
+```{r data-prep, echo=TRUE, eval=TRUE}
 library(readtext)
 
 df <- readtext(
@@ -323,6 +323,8 @@ dfm_mat
 # Falas x Personagem x Filme
 ```{r ggplot2, fig.align='center'}
 library(ggplot2)
+library(dplyr)
+library(forcats)
 df %>% 
   mutate(char = fct_infreq(char)) %>% 
   filter(char != "Other") %>%
@@ -379,6 +381,7 @@ topic_model <- stm(dtm_stm$documents,
 ```
 
 ```{r tm-real}
+library(stm)
 topic_model <- readRDS("processed-data/topic_model.rds")
 labelTopics(topic_model, topics = 1:3, n = 6)
 ```
@@ -426,8 +429,7 @@ summary(regression, topics = 3)
 class: inverse, middle
 
 ```{r closing-thought, out.width='100%'}
-# Closing thought some nice image
-#knitr::include_graphics("images/great_power.png")
+knitr::include_graphics("images/meme-final.jpg")
 ```
 
 ---
