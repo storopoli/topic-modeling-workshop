@@ -21,7 +21,7 @@ layout: true
 
 ---
 ```{r setup, include=FALSE}
-library(DiagrammeR)
+library(magrittr)
 options(htmltools.dir.version = FALSE,
         htmltools.preserve.raw = FALSE)
 knitr::opts_chunk$set(fig.retina = 4,
@@ -150,6 +150,7 @@ knitr::include_graphics("images/corpus.jpg")
 ## Pré-processamento de Texto
 
 ```{r graph-text-preprocessing, out.width='80%'}
+library(DiagrammeR)
 grViz("
  digraph text_preprocessing {
   graph [overlap = false,
@@ -208,7 +209,7 @@ class: inverse, middle, center
 class: middle
 
 # R: [`{stm}`](https://www.structuraltopicmodel.com/) e [`{quanteda}`](http://quanteda.io/)
-# Python: [`gensim`](https://radimrehurek.com/gensim/)
+# Python: [`gensim`](https://radimrehurek.com/gensim/) e [`scikit-learn`](https://scikit-learn.org/)
 # Julia: [`TextAnalysis.jl`](https://juliahub.com/docs/TextAnalysis)
 
 ---
@@ -216,6 +217,209 @@ class: inverse, middle
 
 ```{r case-study, out.width='100%'}
 knitr::include_graphics("images/case-study.jpg")
+```
+
+---
+# Senhor dos Anéis - [Kaggle](https://www.kaggle.com/paultimothymooney/lord-of-the-rings-data?select=lotr_scripts.csv)
+
+.pull-left[
+## `lotr_scripts.csv`
+* 2,389 falas
+
+* `char`: Personagem
+
+* `dialog`: Fala
+
+* `movie`: Filme
+]
+.pull-right[
+## `lotr_characters.csv`
+* 911 personagens
+
+* `race`: Elfo, Orc, Humano etc.
+
+* `gender`: Male, Female
+]
+
+.footnote[
+Kaggle - https://www.kaggle.com/paultimothymooney/lord-of-the-rings-data
+]
+
+---
+# Preparação dos dados
+.pull-left[
+```{r data-prep, echo=TRUE, eval=FALSE}
+library(readtext)
+
+df <- readtext(
+  "data/lotr_scripts.csv",
+  text_field = "dialog") #<<
+```
+]
+
+.pull-right[
+* FRODO
+* SAM
+* GANDALF
+* ARAGORN
+* PIPPIN
+* MERRY
+* GOLLUM
+* GIMLI
+* LEGOLAS
+]
+
+---
+# Corpus e Tokens
+
+```{r corpus-r, echo=TRUE, eval=FALSE}
+library(quanteda)
+corpus <- corpus(df) #<<
+summary(corpus)
+```
+
+```{r corpus-real}
+corpus <- readRDS("processed-data/corpus.rds")
+summary(corpus, n = 3)
+```
+
+```{r tokens, echo=TRUE, eval=FALSE}
+toks <- tokens(corpus,
+               remove_punct = TRUE, #<<
+               remove_symbols = TRUE, #<<
+               remove_numbers = TRUE, #<<
+               remove_separators = TRUE, #<<
+               split_hyphens = TRUE #<<
+)
+```
+
+```{r tokens-real}
+toks <- readRDS("processed-data/toks.rds")
+```
+
+
+---
+# Document-Term Matrix (`dtm`)
+
+```{r dfm, echo=TRUE, eval=FALSE}
+library(stopwords)
+dfm_mat <- dfm(toks,
+  tolower = TRUE) #<<
+
+dfm_mat <- dfm_remove(dfm_mat,
+  pattern = stopwords(language = "en", source = "snowball")) #<<
+
+dfm_mat <- dfm_wordstem(dfm_mat,
+  language = "en") #<<
+dfm_mat
+```
+
+```{r dfm-real}
+dfm_mat <- readRDS("processed-data/dfm_mat.rds")
+dfm_mat
+```
+
+---
+# Falas x Personagem x Filme
+```{r ggplot2, fig.align='center'}
+library(ggplot2)
+df %>% 
+  mutate(char = fct_infreq(char)) %>% 
+  filter(char != "Other") %>%
+  ggplot(aes(x = char, fill = movie)) +
+  geom_bar() +
+  theme(
+    legend.position = "bottom",
+    axis.text.x = element_text(angle = 45),
+    text = element_text(size = 16)
+  ) +
+  ylab(NULL)
+```
+
+---
+# Quantos tópicos?
+.small[
+Antes precisamos converter a `dtm` do `{quanteda}` para o `{stm}`:
+]
+```{r dtm-convert, echo=TRUE, eval=FALSE}
+dtm_stm <- convert(dfm_mat, to = "stm")
+```
+
+```{r dtm-convert-real}
+dtm_stm <- readRDS("processed-data/dtm_stm.rds")
+how_many_k <- readRDS("processed-data/how_many_k.rds")
+```
+
+```{r how_many_k, out.width='50%', fig.align='center'}
+library(tidyr)
+how_many_k$results %>% 
+  unnest() %>% 
+  ggplot(aes(K, semcoh, label = K)) +
+  geom_line(color = "#377eb8") +
+  geom_point() +
+  geom_label() +
+  labs(x = "Número de Tópicos",
+       y = "Coerência Semântica",
+       label = "") +
+  scale_x_continuous(breaks = 3:10) +
+  scale_y_continuous(labels = scales::number, breaks = scales::breaks_extended(10)) +
+  theme(text = element_text(size = 18))
+```
+
+---
+# Topic Modeling
+
+```{r tm, echo=TRUE, eval=FALSE}
+topic_model <- stm(dtm_stm$documents,
+                   vocab = dtm_stm$vocab,
+                   data = dtm_stm$meta,
+                   K = 3, #<<
+                   prevalence =~ movie + char, #<<
+                   seed = 123) #<<
+```
+
+```{r tm-real}
+topic_model <- readRDS("processed-data/topic_model.rds")
+labelTopics(topic_model, topics = 1:3, n = 6)
+```
+
+---
+```{r plot-tm, fig.align='center'}
+plot(topic_model, type = "hist")
+```
+
+---
+# STM
+
+.large[
+```{r stm, echo=TRUE, eval=FALSE}
+regression <- estimateEffect(
+  1:3 ~ movie + char, #<<
+  topic_model,
+  meta = dtm_stm$meta)
+summary(regression, topics = 1)
+```
+]
+
+```{r stm-real}
+regression <- readRDS("processed-data/regression.rds")
+```
+
+---
+**Tópico 1**: king, lord, gondor, smeagol, rohan, citi, saruman 
+```{r stm-1}
+summary(regression, topics = 1)
+```
+
+---
+**Tópico 2**: gandalf, sam, day, death, friend, war, tree 
+```{r stm-2}
+summary(regression, topics = 2)
+```
+---
+**Tópico 3**: frodo, master, hobbit, time, dead, merri, aragorn 
+```{r stm-3}
+summary(regression, topics = 3)
 ```
 
 ---

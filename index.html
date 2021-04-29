@@ -141,8 +141,8 @@ class: inverse, middle, center
 ---
 ## Pré-processamento de Texto
 
-<div id="htmlwidget-9eceb20dc2a931752ae4" style="width:80%;height:504px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-9eceb20dc2a931752ae4">{"x":{"diagram":"\n digraph text_preprocessing {\n  graph [overlap = false,\n         fontsize = 12,\n         rankdir = LR]\n  node [shape = oval,\n        fontname = Helvetica]\n  A [label = \"Pré\nProcessamento\"]\n  node [shape = box,\n        fontname = Helvetica]\n  B [label = \"Tokenização\"]; C [label = \"Lematização\"]; D [label = \"Stop Words\"];\n  A -> {B C D } [dir = forward,\n                    tailport = \"e\",\n                    headport = \"w\"]\n} \n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-afba6924377c33487f82" style="width:80%;height:504px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-afba6924377c33487f82">{"x":{"diagram":"\n digraph text_preprocessing {\n  graph [overlap = false,\n         fontsize = 12,\n         rankdir = LR]\n  node [shape = oval,\n        fontname = Helvetica]\n  A [label = \"Pré\nProcessamento\"]\n  node [shape = box,\n        fontname = Helvetica]\n  B [label = \"Tokenização\"]; C [label = \"Lematização\"]; D [label = \"Stop Words\"];\n  A -> {B C D } [dir = forward,\n                    tailport = \"e\",\n                    headport = \"w\"]\n} \n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 .footnote[
 Denny, M. J., &amp; Spirling, A. (2018). Text Preprocessing For Unsupervised Learning: Why It Matters, When It Misleads, And What To Do About It. Political Analysis, 26(2), 168–189. https://doi.org/10.1017/pan.2017.44
@@ -184,13 +184,287 @@ class: inverse, middle, center
 class: middle
 
 # R: [`{stm}`](https://www.structuraltopicmodel.com/) e [`{quanteda}`](http://quanteda.io/)
-# Python: [`gensim`](https://radimrehurek.com/gensim/)
+# Python: [`gensim`](https://radimrehurek.com/gensim/) e [`scikit-learn`](https://scikit-learn.org/)
 # Julia: [`TextAnalysis.jl`](https://juliahub.com/docs/TextAnalysis)
 
 ---
 class: inverse, middle
 
 &lt;img src="images/case-study.jpg" width="100%" /&gt;
+
+---
+# Senhor dos Anéis - [Kaggle](https://www.kaggle.com/paultimothymooney/lord-of-the-rings-data?select=lotr_scripts.csv)
+
+.pull-left[
+## `lotr_scripts.csv`
+* 2,389 falas
+
+* `char`: Personagem
+
+* `dialog`: Fala
+
+* `movie`: Filme
+]
+.pull-right[
+## `lotr_characters.csv`
+* 911 personagens
+
+* `race`: Elfo, Orc, Humano etc.
+
+* `gender`: Male, Female
+]
+
+.footnote[
+Kaggle - https://www.kaggle.com/paultimothymooney/lord-of-the-rings-data
+]
+
+---
+# Preparação dos dados
+.pull-left[
+
+```r
+library(readtext)
+
+df &lt;- readtext(
+  "data/lotr_scripts.csv",
+* text_field = "dialog")
+```
+]
+
+.pull-right[
+* FRODO
+* SAM
+* GANDALF
+* ARAGORN
+* PIPPIN
+* MERRY
+* GOLLUM
+* GIMLI
+* LEGOLAS
+]
+
+---
+# Corpus e Tokens
+
+
+```r
+library(quanteda)
+*corpus &lt;- corpus(df)
+summary(corpus)
+```
+
+
+```
+## Corpus consisting of 2390 documents, showing 3 documents:
+## 
+##                Text Types Tokens Sentences id  char                  movie
+##  lotr_scripts.csv.1     9     15         1  0 Other The Return of the King
+##  lotr_scripts.csv.2     9     17         2  1 Other The Return of the King
+##  lotr_scripts.csv.3     2      2         1  2 Other The Return of the King
+```
+
+
+```r
+toks &lt;- tokens(corpus,
+*              remove_punct = TRUE,
+*              remove_symbols = TRUE,
+*              remove_numbers = TRUE,
+*              remove_separators = TRUE,
+*              split_hyphens = TRUE
+)
+```
+
+
+
+
+---
+# Document-Term Matrix (`dtm`)
+
+
+```r
+library(stopwords)
+dfm_mat &lt;- dfm(toks,
+* tolower = TRUE)
+
+dfm_mat &lt;- dfm_remove(dfm_mat,
+* pattern = stopwords(language = "en", source = "snowball"))
+
+dfm_mat &lt;- dfm_wordstem(dfm_mat,
+* language = "en")
+dfm_mat
+```
+
+
+```
+## Document-feature matrix of: 2,390 documents, 2,605 features (99.88% sparse) and 3 docvars.
+##                     features
+## docs                 smeagol fish pull arrghh deagol love birthday precious curs murder
+##   lotr_scripts.csv.1       3    1    0      0      0    0        0        0    0      0
+##   lotr_scripts.csv.2       0    0    2      0      0    0        0        0    0      0
+##   lotr_scripts.csv.3       0    0    0      1      0    0        0        0    0      0
+##   lotr_scripts.csv.4       0    0    0      0      1    0        0        0    0      0
+##   lotr_scripts.csv.5       0    0    0      0      1    0        0        0    0      0
+##   lotr_scripts.csv.6       0    0    0      0      1    0        0        0    0      0
+## [ reached max_ndoc ... 2,384 more documents, reached max_nfeat ... 2,595 more features ]
+```
+
+---
+# Falas x Personagem x Filme
+&lt;img src="index_files/figure-html/ggplot2-1.png" width="504" style="display: block; margin: auto;" /&gt;
+
+---
+# Quantos tópicos?
+.small[
+Antes precisamos converter a `dtm` do `{quanteda}` para o `{stm}`:
+]
+
+```r
+dtm_stm &lt;- convert(dfm_mat, to = "stm")
+```
+
+
+
+&lt;img src="index_files/figure-html/how_many_k-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+---
+# Topic Modeling
+
+
+```r
+topic_model &lt;- stm(dtm_stm$documents,
+                   vocab = dtm_stm$vocab,
+                   data = dtm_stm$meta,
+*                  K = 3,
+*                  prevalence =~ movie + char,
+*                  seed = 123)
+```
+
+
+```
+## Topic 1 Top Words:
+##  	 Highest Prob: king, lord, gondor, smeagol, rohan, citi 
+##  	 FREX: king, lord, gondor, smeagol, rohan, citi 
+##  	 Lift: 3'7, 3'8, aaa, aaaaagh, ab, account 
+##  	 Score: king, lord, gondor, theoden, smeagol, heh 
+## Topic 2 Top Words:
+##  	 Highest Prob: gandalf, sam, day, death, friend, war 
+##  	 FREX: gandalf, sam, death, friend, wait, heart 
+##  	 Lift: aaaaaaaaahhhhhhhhhh, aaaaah, aaaahh, aah, abdollen, accord 
+##  	 Score: sam, gandalf, hmm, friend, grond, death 
+## Topic 3 Top Words:
+##  	 Highest Prob: frodo, master, hobbit, time, dead, merri 
+##  	 FREX: frodo, hobbit, time, dead, merri, precious 
+##  	 Lift: beacon, bilbo, brego, care, carri, eat 
+##  	 Score: frodo, precious, merri, dead, kill, pippin
+```
+
+---
+&lt;img src="index_files/figure-html/plot-tm-1.png" width="504" style="display: block; margin: auto;" /&gt;
+
+---
+# STM
+
+.large[
+
+```r
+regression &lt;- estimateEffect(
+* 1:3 ~ movie + char,
+  topic_model,
+  meta = dtm_stm$meta)
+summary(regression, topics = 1)
+```
+]
+
+
+
+---
+**Tópico 1**: king, lord, gondor, smeagol, rohan, citi, saruman 
+
+```
+## 
+## Call:
+## estimateEffect(formula = 1:3 ~ movie + char, stmobj = topic_model, 
+##     metadata = dtm_stm$meta, uncertainty = "Global")
+## 
+## 
+## Topic 1:
+## 
+## Coefficients:
+##                             Estimate Std. Error t value             Pr(&gt;|t|)    
+## (Intercept)                   0.3045     0.0287   10.59 &lt; 0.0000000000000002 ***
+## movieThe Return of the King   0.1119     0.0184    6.10   0.0000000012831756 ***
+## movieThe Two Towers           0.1042     0.0172    6.06   0.0000000016187481 ***
+## charFRODO                    -0.1365     0.0334   -4.09   0.0000451340141584 ***
+## charGANDALF                   0.0056     0.0318    0.18              0.86026    
+## charGIMLI                    -0.1150     0.0378   -3.04              0.00240 ** 
+## charGOLLUM                   -0.1723     0.0351   -4.91   0.0000009588017138 ***
+## charLEGOLAS                  -0.0327     0.0482   -0.68              0.49684    
+## charMERRY                    -0.0885     0.0385   -2.30              0.02144 *  
+## charOther                    -0.0235     0.0252   -0.93              0.35045    
+## charPIPPIN                   -0.1150     0.0335   -3.43              0.00061 ***
+## charSAM                      -0.2510     0.0308   -8.15   0.0000000000000006 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+**Tópico 2**: gandalf, sam, day, death, friend, war, tree 
+
+```
+## 
+## Call:
+## estimateEffect(formula = 1:3 ~ movie + char, stmobj = topic_model, 
+##     metadata = dtm_stm$meta, uncertainty = "Global")
+## 
+## 
+## Topic 2:
+## 
+## Coefficients:
+##                             Estimate Std. Error t value             Pr(&gt;|t|)    
+## (Intercept)                  0.31629    0.02627   12.04 &lt; 0.0000000000000002 ***
+## movieThe Return of the King -0.04632    0.01838   -2.52                0.012 *  
+## movieThe Two Towers          0.01102    0.01728    0.64                0.524    
+## charFRODO                    0.13651    0.03166    4.31             0.000017 ***
+## charGANDALF                 -0.05346    0.03258   -1.64                0.101    
+## charGIMLI                    0.02569    0.03912    0.66                0.511    
+## charGOLLUM                  -0.14073    0.03409   -4.13             0.000038 ***
+## charLEGOLAS                 -0.02542    0.04409   -0.58                0.564    
+## charMERRY                   -0.00247    0.03799   -0.06                0.948    
+## charOther                    0.03094    0.02389    1.30                0.195    
+## charPIPPIN                   0.01262    0.03397    0.37                0.710    
+## charSAM                      0.02116    0.03067    0.69                0.490    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+---
+**Tópico 3**: frodo, master, hobbit, time, dead, merri, aragorn 
+
+```
+## 
+## Call:
+## estimateEffect(formula = 1:3 ~ movie + char, stmobj = topic_model, 
+##     metadata = dtm_stm$meta, uncertainty = "Global")
+## 
+## 
+## Topic 3:
+## 
+## Coefficients:
+##                              Estimate Std. Error t value             Pr(&gt;|t|)    
+## (Intercept)                  0.379540   0.026614   14.26 &lt; 0.0000000000000002 ***
+## movieThe Return of the King -0.065841   0.017155   -3.84              0.00013 ***
+## movieThe Two Towers         -0.115106   0.018120   -6.35     0.00000000026028 ***
+## charFRODO                   -0.000351   0.031306   -0.01              0.99105    
+## charGANDALF                  0.048076   0.032796    1.47              0.14283    
+## charGIMLI                    0.089524   0.038393    2.33              0.01981 *  
+## charGOLLUM                   0.312678   0.034811    8.98 &lt; 0.0000000000000002 ***
+## charLEGOLAS                  0.057565   0.048128    1.20              0.23180    
+## charMERRY                    0.091165   0.035883    2.54              0.01114 *  
+## charOther                   -0.007891   0.024354   -0.32              0.74595    
+## charPIPPIN                   0.102262   0.033542    3.05              0.00233 ** 
+## charSAM                      0.229294   0.030934    7.41     0.00000000000018 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
 
 ---
 class: inverse, middle

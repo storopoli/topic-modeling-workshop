@@ -43,3 +43,6 @@ vignettes/*.pdf
 .Renviron
 
 # End of https://www.toptal.com/developers/gitignore/api/r
+
+# Mac Files
+.DS_Store
