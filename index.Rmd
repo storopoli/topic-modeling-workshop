@@ -208,9 +208,12 @@ class: inverse, middle, center
 ---
 class: middle
 
-# R: [`{stm}`](https://www.structuraltopicmodel.com/) e [`{quanteda}`](http://quanteda.io/)
-# Python: [`gensim`](https://radimrehurek.com/gensim/) e [`scikit-learn`](https://scikit-learn.org/)
-# Julia: [`TextAnalysis.jl`](https://juliahub.com/docs/TextAnalysis)
+# R
+### [`{stm}`](https://www.structuraltopicmodel.com/) e [`{quanteda}`](http://quanteda.io/)
+# Python
+### [`gensim`](https://radimrehurek.com/gensim/) e [`scikit-learn`](https://scikit-learn.org/)
+# Julia
+### [`TextAnalysis.jl`](https://juliahub.com/docs/TextAnalysis)
 
 ---
 class: inverse, middle
@@ -223,7 +226,7 @@ knitr::include_graphics("images/case-study.jpg")
 # Senhor dos Anéis - [Kaggle](https://www.kaggle.com/paultimothymooney/lord-of-the-rings-data?select=lotr_scripts.csv)
 
 .pull-left[
-## `lotr_scripts.csv`
+### `lotr_scripts.csv`
 * 2,389 falas
 
 * `char`: Personagem
@@ -233,7 +236,7 @@ knitr::include_graphics("images/case-study.jpg")
 * `movie`: Filme
 ]
 .pull-right[
-## `lotr_characters.csv`
+### `lotr_characters.csv`
 * 911 personagens
 
 * `race`: Elfo, Orc, Humano etc.
