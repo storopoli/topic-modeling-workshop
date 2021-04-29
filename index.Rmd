@@ -78,13 +78,78 @@ xaringanExtra::use_tachyons()
 xaringanExtra::use_webcam()
 ```
 
-# Slide 1
+# O que é modelagem de tópicos?
+
+```{r topic-modeling, out.width='100%'}
+knitr::include_graphics("images/topic-modeling.jpg")
+```
+
+.footnote[
+Jordan, M. I., & Mitchell, T. M. (2015). Machine learning: Trends, perspectives, and prospects. Science, 349(6245), 255–260. https://doi.org/10.1126/science.aaa8415
+]
+
+???
+
+Modelo Probabilístico
+
+---
+class: inverse, middle, center
+
+# Iramuteq vs Topic Modeling
+
+```{r fight}
+knitr::include_graphics("images/fight.jpg")
+```
+
 
 ---
 
-# Pré-processamento de Texto
+.pull-left[
+## Iramuteq
+* Clusterização Hierárquica
 
-```{r graph-text-preprocessing, out.width='100%'}
+* Estimativa Pontual
+
+* Erro
+
+* Reinert (1990) - 787 citações
+]
+
+.pull-right[
+## Topic Modeling
+* Modelo Probabilístico
+* Densidade Posterior
+* Incerteza 
+* Blei et al. (2003) - 37.287 citações
+* Publicado na Nature, PLoS, PNAS etc.
+* Usado pela Amazon
+]
+
+.footnote[
+Reinert, M. (1990). Alceste une méthodologie d'analyse des données textuelles et une application: Aurelia De Gerard De Nerval. Bulletin of Sociological Methodology/Bulletin de méthodologie sociologique, 26(1), 24-54.
+
+Blei, D. M., Ng, A. Y., & Jordan, M. I. (2003). Latent dirichlet allocation. the Journal of machine Learning research, 3, 993-1022.
+]
+
+???
+
+Iramuteq é clusterização -> Point Estimate e um único pertencimento
+
+Enquanto TM é um modelo generativo probabilístico (bayesiano) -> Densidade posterior completa e uma probabilidade de pertencimento $\sum_p =1 e \mathbf{p} = (p_1, \dots, p_k)$.
+
+---
+class: inverse, middle, center
+
+# Mas ainda temos que processar texto
+
+```{r corpus, out.width='75%'}
+knitr::include_graphics("images/corpus.jpg")
+```
+
+---
+## Pré-processamento de Texto
+
+```{r graph-text-preprocessing, out.width='80%'}
 grViz("
  digraph text_preprocessing {
   graph [overlap = false,
@@ -92,26 +157,66 @@ grViz("
          rankdir = LR]
   node [shape = oval,
         fontname = Helvetica]
-  A [label = 'Dados\nObservados']
+  A [label = 'Pré\nProcessamento']
   node [shape = box,
         fontname = Helvetica]
-  B [label = 'Média']; C [label = 'Mediana']; D [label = 'Moda']; E [label = 'Desvio\nPadrão']
-  A -> {B C D E} [dir = forward,
+  B [label = 'Tokenização']; C [label = 'Lematização']; D [label = 'Stop Words'];
+  A -> {B C D } [dir = forward,
                     tailport = 'e',
                     headport = 'w']
 } 
 ")
 ```
 
+.footnote[
+Denny, M. J., & Spirling, A. (2018). Text Preprocessing For Unsupervised Learning: Why It Matters, When It Misleads, And What To Do About It. Political Analysis, 26(2), 168–189. https://doi.org/10.1017/pan.2017.44
+
+Storopoli, J. E. (2019). Topic Modeling: How and why to use in management research. Iberoamerican Journal of Strategic Management (IJSM), 18(3), 8–20.
+]
+
+---
+# Structural Topic Modeling (STM)
+
+.small[
+* Topic Modeling com Esteroides
+
+* Metadados dos documentos para gerar inferências sobre a prevalência e conteúdo de cada tópico
+
+* Além de descobrir tópicos
+
+* Analisa a relação das informações dos documentos com os tópicos
+* Farrell (2016) analisou mais de 40 mil documentos sobre mudança climática de 120 organizações
+* Kuhn (2018) analisou mais de 25 mil relatórios de acidentes de aviação
+]
+
+.footnote[
+Roberts, M. E., Stewart, B. M., Tingley, D., Lucas, C., Leder-Luis, J., Gadarian, S. K., Albertson, B., & Rand, D. G. (2014). Structural Topic Models for Open-Ended Survey Responses. American Journal of Political Science, 58(4), 1064–1082. https://doi.org/10.1111/ajps.12103
+
+Farrell, J. (2016). Corporate funding and ideological polarization about climate change. Proceedings of the National Academy of Sciences, 113(1), 92–97. https://doi.org/10.1073/PNAS.1509433112
+
+Kuhn, K. D. (2018). Using structural topic modeling to identify latent topics and trends in aviation incident reports. Transportation Research Part C: Emerging Technologies, 87, 105-122.
+]
+
 ---
 class: inverse, middle, center
 
-# Change of Theme
+# Ferramentas
 
-`r icons::icon_style(icons::fontawesome("chart-line"), scale = 6, fill = "white")`
+`r icons::icon_style(icons::fontawesome("tools"), scale = 6, fill = "white")`
 
 ---
-# Slide 2
+class: middle
+
+# R: [`{stm}`](https://www.structuraltopicmodel.com/)
+# Python: [`gensim`](https://radimrehurek.com/gensim/)
+# Julia: [`TextAnalysis.jl`](https://juliahub.com/docs/TextAnalysis)
+
+---
+class: inverse, middle
+
+```{r case-study, out.width='100%'}
+knitr::include_graphics("images/case-study.jpg")
+```
 
 ---
 class: inverse, middle

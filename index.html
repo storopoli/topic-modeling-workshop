@@ -76,24 +76,121 @@ top:1em;right:1em;
 })()</script>
 </div>
 
-# Slide 1
+# O que é modelagem de tópicos?
 
----
+&lt;img src="images/topic-modeling.jpg" width="100%" /&gt;
 
-# Pré-processamento de Texto
+.footnote[
+Jordan, M. I., &amp; Mitchell, T. M. (2015). Machine learning: Trends, perspectives, and prospects. Science, 349(6245), 255–260. https://doi.org/10.1126/science.aaa8415
+]
 
-<div id="htmlwidget-9eceb20dc2a931752ae4" style="width:100%;height:504px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-9eceb20dc2a931752ae4">{"x":{"diagram":"\n digraph text_preprocessing {\n  graph [overlap = false,\n         fontsize = 12,\n         rankdir = LR]\n  node [shape = oval,\n        fontname = Helvetica]\n  A [label = \"Dados\nObservados\"]\n  node [shape = box,\n        fontname = Helvetica]\n  B [label = \"Média\"]; C [label = \"Mediana\"]; D [label = \"Moda\"]; E [label = \"Desvio\nPadrão\"]\n  A -> {B C D E} [dir = forward,\n                    tailport = \"e\",\n                    headport = \"w\"]\n} \n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+???
+
+Modelo Probabilístico
 
 ---
 class: inverse, middle, center
 
-# Change of Theme
+# Iramuteq vs Topic Modeling
 
-&lt;svg viewBox="0 0 512 512" style="position:relative;display:inline-block;top:.1em;fill:white;height:6em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M496 384H64V80c0-8.84-7.16-16-16-16H16C7.16 64 0 71.16 0 80v336c0 17.67 14.33 32 32 32h464c8.84 0 16-7.16 16-16v-32c0-8.84-7.16-16-16-16zM464 96H345.94c-21.38 0-32.09 25.85-16.97 40.97l32.4 32.4L288 242.75l-73.37-73.37c-12.5-12.5-32.76-12.5-45.25 0l-68.69 68.69c-6.25 6.25-6.25 16.38 0 22.63l22.62 22.62c6.25 6.25 16.38 6.25 22.63 0L192 237.25l73.37 73.37c12.5 12.5 32.76 12.5 45.25 0l96-96 32.4 32.4c15.12 15.12 40.97 4.41 40.97-16.97V112c.01-8.84-7.15-16-15.99-16z"&gt;&lt;/path&gt;&lt;/svg&gt;
+&lt;img src="images/fight.jpg" width="200" /&gt;
+
 
 ---
-# Slide 2
+
+.pull-left[
+## Iramuteq
+* Clusterização Hierárquica
+
+* Estimativa Pontual
+
+* Erro
+
+* Reinert (1990) - 787 citações
+]
+
+.pull-right[
+## Topic Modeling
+* Modelo Probabilístico
+* Densidade Posterior
+* Incerteza 
+* Blei et al. (2003) - 37.287 citações
+* Publicado na Nature, PLoS, PNAS etc.
+* Usado pela Amazon
+]
+
+.footnote[
+Reinert, M. (1990). Alceste une méthodologie d'analyse des données textuelles et une application: Aurelia De Gerard De Nerval. Bulletin of Sociological Methodology/Bulletin de méthodologie sociologique, 26(1), 24-54.
+
+Blei, D. M., Ng, A. Y., &amp; Jordan, M. I. (2003). Latent dirichlet allocation. the Journal of machine Learning research, 3, 993-1022.
+]
+
+???
+
+Iramuteq é clusterização -&gt; Point Estimate e um único pertencimento
+
+Enquanto TM é um modelo generativo probabilístico (bayesiano) -&gt; Densidade posterior completa e uma probabilidade de pertencimento `\(\sum_p =1 e \mathbf{p} = (p_1, \dots, p_k)\)`.
+
+---
+class: inverse, middle, center
+
+# Mas ainda temos que processar texto
+
+&lt;img src="images/corpus.jpg" width="75%" /&gt;
+
+---
+## Pré-processamento de Texto
+
+<div id="htmlwidget-9eceb20dc2a931752ae4" style="width:80%;height:504px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-9eceb20dc2a931752ae4">{"x":{"diagram":"\n digraph text_preprocessing {\n  graph [overlap = false,\n         fontsize = 12,\n         rankdir = LR]\n  node [shape = oval,\n        fontname = Helvetica]\n  A [label = \"Pré\nProcessamento\"]\n  node [shape = box,\n        fontname = Helvetica]\n  B [label = \"Tokenização\"]; C [label = \"Lematização\"]; D [label = \"Stop Words\"];\n  A -> {B C D } [dir = forward,\n                    tailport = \"e\",\n                    headport = \"w\"]\n} \n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+
+.footnote[
+Denny, M. J., &amp; Spirling, A. (2018). Text Preprocessing For Unsupervised Learning: Why It Matters, When It Misleads, And What To Do About It. Political Analysis, 26(2), 168–189. https://doi.org/10.1017/pan.2017.44
+
+Storopoli, J. E. (2019). Topic Modeling: How and why to use in management research. Iberoamerican Journal of Strategic Management (IJSM), 18(3), 8–20.
+]
+
+---
+# Structural Topic Modeling (STM)
+
+.small[
+* Topic Modeling com Esteroides
+
+* Metadados dos documentos para gerar inferências sobre a prevalência e conteúdo de cada tópico
+
+* Além de descobrir tópicos
+
+* Analisa a relação das informações dos documentos com os tópicos
+* Farrell (2016) analisou mais de 40 mil documentos sobre mudança climática de 120 organizações
+* Kuhn (2018) analisou mais de 25 mil relatórios de acidentes de aviação
+]
+
+.footnote[
+Roberts, M. E., Stewart, B. M., Tingley, D., Lucas, C., Leder-Luis, J., Gadarian, S. K., Albertson, B., &amp; Rand, D. G. (2014). Structural Topic Models for Open-Ended Survey Responses. American Journal of Political Science, 58(4), 1064–1082. https://doi.org/10.1111/ajps.12103
+
+Farrell, J. (2016). Corporate funding and ideological polarization about climate change. Proceedings of the National Academy of Sciences, 113(1), 92–97. https://doi.org/10.1073/PNAS.1509433112
+
+Kuhn, K. D. (2018). Using structural topic modeling to identify latent topics and trends in aviation incident reports. Transportation Research Part C: Emerging Technologies, 87, 105-122.
+]
+
+---
+class: inverse, middle, center
+
+# Ferramentas
+
+&lt;svg viewBox="0 0 512 512" style="position:relative;display:inline-block;top:.1em;fill:white;height:6em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M501.1 395.7L384 278.6c-23.1-23.1-57.6-27.6-85.4-13.9L192 158.1V96L64 0 0 64l96 128h62.1l106.6 106.6c-13.6 27.8-9.2 62.3 13.9 85.4l117.1 117.1c14.6 14.6 38.2 14.6 52.7 0l52.7-52.7c14.5-14.6 14.5-38.2 0-52.7zM331.7 225c28.3 0 54.9 11 74.9 31l19.4 19.4c15.8-6.9 30.8-16.5 43.8-29.5 37.1-37.1 49.7-89.3 37.9-136.7-2.2-9-13.5-12.1-20.1-5.5l-74.4 74.4-67.9-11.3L334 98.9l74.4-74.4c6.6-6.6 3.4-17.9-5.7-20.2-47.4-11.7-99.6.9-136.6 37.9-28.5 28.5-41.9 66.1-41.2 103.6l82.1 82.1c8.1-1.9 16.5-2.9 24.7-2.9zm-103.9 82l-56.7-56.7L18.7 402.8c-25 25-25 65.5 0 90.5s65.5 25 90.5 0l123.6-123.6c-7.6-19.9-9.9-41.6-5-62.7zM64 472c-13.2 0-24-10.8-24-24 0-13.3 10.7-24 24-24s24 10.7 24 24c0 13.2-10.7 24-24 24z"&gt;&lt;/path&gt;&lt;/svg&gt;
+
+---
+class: middle
+
+# R: [`{stm}`](https://www.structuraltopicmodel.com/)
+# Python: [`gensim`](https://radimrehurek.com/gensim/)
+# Julia: [`TextAnalysis.jl`](https://juliahub.com/docs/TextAnalysis)
+
+---
+class: inverse, middle
+
+&lt;img src="images/case-study.jpg" width="100%" /&gt;
 
 ---
 class: inverse, middle
