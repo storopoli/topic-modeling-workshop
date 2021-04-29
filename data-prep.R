@@ -19,6 +19,7 @@ interesting_chars = c("FRODO", "SAM", "GANDALF", "ARAGORN", "PIPPIN", "MERRY", "
 df <- df %>%
   mutate(char = str_replace_all(char, " ", "")) %>%
   mutate(char = if_else(char %in% interesting_chars, char, "Other"))
+saveRDS(df, "processed-data/df.rds")
 
 corpus <- corpus(df)
 saveRDS(corpus, "processed-data/corpus.rds")

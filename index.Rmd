@@ -248,12 +248,16 @@ Kaggle - https://www.kaggle.com/paultimothymooney/lord-of-the-rings-data
 ---
 # Preparação dos dados
 .pull-left[
-```{r data-prep, echo=TRUE, eval=TRUE}
+```{r data-prep, echo=TRUE, eval=FALSE}
 library(readtext)
 
 df <- readtext(
   "data/lotr_scripts.csv",
   text_field = "dialog") #<<
+```
+
+```{r data-prep-true}
+df <- readRDS("processed-data/df.rds")
 ```
 ]
 
