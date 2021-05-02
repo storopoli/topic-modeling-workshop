@@ -23,7 +23,8 @@ layout: true
 ```{r setup, include=FALSE}
 library(magrittr)
 options(htmltools.dir.version = FALSE,
-        htmltools.preserve.raw = FALSE)
+        htmltools.preserve.raw = FALSE,
+        scipen = 0, digits=3)
 knitr::opts_chunk$set(fig.retina = 4,
                       warning = FALSE,
                       message = FALSE,
@@ -53,10 +54,11 @@ style_mono_accent(
   header_font_google = google_font("Josefin Sans"),
   text_font_google   = google_font("Montserrat", "300", "300i"),
   code_font_google   = google_font("Fira Mono"),
+  code_font_size     = "0.8rem",
   text_font_size     = "1.5em",
   footnote_font_size = "0.4em",
-  extra_css = extra_css,
-  outfile = "css/xaringan-themer.css"
+  extra_css          = extra_css,
+  outfile            = "css/xaringan-themer.css"
 )
 ```
 
@@ -104,31 +106,32 @@ knitr::include_graphics("images/fight.jpg")
 
 ---
 
+.footnote[
+Reinert, M. (1990). Alceste une méthodologie d'analyse des données textuelles et une application: Aurelia De Gerard De Nerval. Bulletin of Sociological Methodology/Bulletin de méthodologie sociologique, 26(1), 24-54.
+
+Blei, D. M., Ng, A. Y., & Jordan, M. I. (2003). Latent dirichlet allocation. the Journal of machine Learning research, 3, 993-1022.
+]
+
 .pull-left[
 ## Iramuteq
 * Clusterização Hierárquica
-
 * Estimativa Pontual
-
 * Erro
-
+* Muitos "graus de liberdade" do pesquisador
 * Reinert (1990) - 787 citações
 ]
+
+--
 
 .pull-right[
 ## Topic Modeling
 * Modelo Probabilístico
 * Densidade Posterior
 * Incerteza 
+* Apenas um "grau de liberdade" do pesquisador
 * Blei et al. (2003) - 37.287 citações
 * Publicado na Nature, PLoS, PNAS etc.
 * Usado pela Amazon
-]
-
-.footnote[
-Reinert, M. (1990). Alceste une méthodologie d'analyse des données textuelles et une application: Aurelia De Gerard De Nerval. Bulletin of Sociological Methodology/Bulletin de méthodologie sociologique, 26(1), 24-54.
-
-Blei, D. M., Ng, A. Y., & Jordan, M. I. (2003). Latent dirichlet allocation. the Journal of machine Learning research, 3, 993-1022.
 ]
 
 ???
@@ -211,7 +214,7 @@ class: middle
 # R
 ### [`{stm}`](https://www.structuraltopicmodel.com/) e [`{quanteda}`](http://quanteda.io/)
 # Python
-### [`gensim`](https://radimrehurek.com/gensim/) e [`scikit-learn`](https://scikit-learn.org/)
+### [`gensim`](https://radimrehurek.com/gensim/) e [`scikit-learn`](https://scikit-learn.org/stable/modules/feature_extraction.html#text-feature-extraction)
 # Julia
 ### [`TextAnalysis.jl`](https://juliahub.com/docs/TextAnalysis)
 
@@ -286,6 +289,7 @@ summary(corpus)
 ```
 
 ```{r corpus-real}
+library(quanteda)
 corpus <- readRDS("processed-data/corpus.rds")
 summary(corpus, n = 3)
 ```
@@ -323,7 +327,7 @@ dfm_mat
 
 ```{r dfm-real}
 dfm_mat <- readRDS("processed-data/dfm_mat.rds")
-dfm_mat
+dfm_mat[, 1:8]
 ```
 
 ---
@@ -332,6 +336,7 @@ dfm_mat
 library(ggplot2)
 library(dplyr)
 library(forcats)
+library(stringr)
 df %>% 
   mutate(char = fct_infreq(char)) %>% 
   filter(char != "Other") %>%
@@ -342,7 +347,9 @@ df %>%
     axis.text.x = element_text(angle = 45),
     text = element_text(size = 16)
   ) +
-  ylab(NULL)
+  ylab(NULL) +
+  xlab(NULL) +
+  guides(fill = guide_legend(nrow = 2))
 ```
 
 ---
@@ -387,11 +394,13 @@ topic_model <- stm(dtm_stm$documents,
                    seed = 123) #<<
 ```
 
+.large[
 ```{r tm-real}
 library(stm)
 topic_model <- readRDS("processed-data/topic_model.rds")
 labelTopics(topic_model, topics = 1:3, n = 6)
 ```
+]
 
 ---
 ```{r plot-tm, fig.align='center'}

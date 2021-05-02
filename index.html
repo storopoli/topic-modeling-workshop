@@ -98,31 +98,32 @@ class: inverse, middle, center
 
 ---
 
+.footnote[
+Reinert, M. (1990). Alceste une méthodologie d'analyse des données textuelles et une application: Aurelia De Gerard De Nerval. Bulletin of Sociological Methodology/Bulletin de méthodologie sociologique, 26(1), 24-54.
+
+Blei, D. M., Ng, A. Y., &amp; Jordan, M. I. (2003). Latent dirichlet allocation. the Journal of machine Learning research, 3, 993-1022.
+]
+
 .pull-left[
 ## Iramuteq
 * Clusterização Hierárquica
-
 * Estimativa Pontual
-
 * Erro
-
+* Muitos "graus de liberdade" do pesquisador
 * Reinert (1990) - 787 citações
 ]
+
+--
 
 .pull-right[
 ## Topic Modeling
 * Modelo Probabilístico
 * Densidade Posterior
 * Incerteza 
+* Apenas um "grau de liberdade" do pesquisador
 * Blei et al. (2003) - 37.287 citações
 * Publicado na Nature, PLoS, PNAS etc.
 * Usado pela Amazon
-]
-
-.footnote[
-Reinert, M. (1990). Alceste une méthodologie d'analyse des données textuelles et une application: Aurelia De Gerard De Nerval. Bulletin of Sociological Methodology/Bulletin de méthodologie sociologique, 26(1), 24-54.
-
-Blei, D. M., Ng, A. Y., &amp; Jordan, M. I. (2003). Latent dirichlet allocation. the Journal of machine Learning research, 3, 993-1022.
 ]
 
 ???
@@ -186,7 +187,7 @@ class: middle
 # R
 ### [`{stm}`](https://www.structuraltopicmodel.com/) e [`{quanteda}`](http://quanteda.io/)
 # Python
-### [`gensim`](https://radimrehurek.com/gensim/) e [`scikit-learn`](https://scikit-learn.org/)
+### [`gensim`](https://radimrehurek.com/gensim/) e [`scikit-learn`](https://scikit-learn.org/stable/modules/feature_extraction.html#text-feature-extraction)
 # Julia
 ### [`TextAnalysis.jl`](https://juliahub.com/docs/TextAnalysis)
 
@@ -260,8 +261,12 @@ summary(corpus)
 
 
 ```
-##    Length    Class1    Class2      Mode 
-##      2390    corpus character character
+## Corpus consisting of 2390 documents, showing 3 documents:
+## 
+##                Text Types Tokens Sentences id  char                  movie
+##  lotr_scripts.csv.1     9     15         1  0 Other The Return of the King
+##  lotr_scripts.csv.2     9     17         2  1 Other The Return of the King
+##  lotr_scripts.csv.3     2      2         1  2 Other The Return of the King
 ```
 
 
@@ -297,7 +302,7 @@ dfm_mat
 
 
 ```
-## Document-feature matrix of: 2,390 documents, 2,605 features (99.88% sparse) and 3 docvars.
+## Document-feature matrix of: 2,390 documents, 8 features (99.45% sparse) and 3 docvars.
 ##                     features
 ## docs                 smeagol fish pull arrghh deagol love birthday precious
 ##   lotr_scripts.csv.1       3    1    0      0      0    0        0        0
@@ -306,15 +311,7 @@ dfm_mat
 ##   lotr_scripts.csv.4       0    0    0      0      1    0        0        0
 ##   lotr_scripts.csv.5       0    0    0      0      1    0        0        0
 ##   lotr_scripts.csv.6       0    0    0      0      1    0        0        0
-##                     features
-## docs                 curs murder
-##   lotr_scripts.csv.1    0      0
-##   lotr_scripts.csv.2    0      0
-##   lotr_scripts.csv.3    0      0
-##   lotr_scripts.csv.4    0      0
-##   lotr_scripts.csv.5    0      0
-##   lotr_scripts.csv.6    0      0
-## [ reached max_ndoc ... 2,384 more documents, reached max_nfeat ... 2,595 more features ]
+## [ reached max_ndoc ... 2,384 more documents ]
 ```
 
 ---
@@ -348,6 +345,7 @@ topic_model &lt;- stm(dtm_stm$documents,
 *                  seed = 123)
 ```
 
+.large[
 
 ```
 ## Topic 1 Top Words:
@@ -366,6 +364,7 @@ topic_model &lt;- stm(dtm_stm$documents,
 ##  	 Lift: beacon, bilbo, brego, care, carri, eat 
 ##  	 Score: frodo, precious, merri, dead, kill, pippin
 ```
+]
 
 ---
 &lt;img src="index_files/figure-html/plot-tm-1.png" width="504" style="display: block; margin: auto;" /&gt;
@@ -399,32 +398,19 @@ summary(regression, topics = 1)
 ## Topic 1:
 ## 
 ## Coefficients:
-##                             Estimate Std. Error t value             Pr(&gt;|t|)
-## (Intercept)                   0.3045     0.0287   10.59 &lt; 0.0000000000000002
-## movieThe Return of the King   0.1119     0.0184    6.10   0.0000000012831756
-## movieThe Two Towers           0.1042     0.0172    6.06   0.0000000016187481
-## charFRODO                    -0.1365     0.0334   -4.09   0.0000451340141584
-## charGANDALF                   0.0056     0.0318    0.18              0.86026
-## charGIMLI                    -0.1150     0.0378   -3.04              0.00240
-## charGOLLUM                   -0.1723     0.0351   -4.91   0.0000009588017138
-## charLEGOLAS                  -0.0327     0.0482   -0.68              0.49684
-## charMERRY                    -0.0885     0.0385   -2.30              0.02144
-## charOther                    -0.0235     0.0252   -0.93              0.35045
-## charPIPPIN                   -0.1150     0.0335   -3.43              0.00061
-## charSAM                      -0.2510     0.0308   -8.15   0.0000000000000006
-##                                
-## (Intercept)                 ***
-## movieThe Return of the King ***
-## movieThe Two Towers         ***
-## charFRODO                   ***
-## charGANDALF                    
-## charGIMLI                   ** 
-## charGOLLUM                  ***
-## charLEGOLAS                    
-## charMERRY                   *  
-## charOther                      
-## charPIPPIN                  ***
-## charSAM                     ***
+##                             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                   0.3045     0.0287   10.59  &lt; 2e-16 ***
+## movieThe Return of the King   0.1119     0.0184    6.10  1.3e-09 ***
+## movieThe Two Towers           0.1042     0.0172    6.06  1.6e-09 ***
+## charFRODO                    -0.1365     0.0334   -4.09  4.5e-05 ***
+## charGANDALF                   0.0056     0.0318    0.18  0.86026    
+## charGIMLI                    -0.1150     0.0378   -3.04  0.00240 ** 
+## charGOLLUM                   -0.1723     0.0351   -4.91  9.6e-07 ***
+## charLEGOLAS                  -0.0327     0.0482   -0.68  0.49684    
+## charMERRY                    -0.0885     0.0385   -2.30  0.02144 *  
+## charOther                    -0.0235     0.0252   -0.93  0.35045    
+## charPIPPIN                   -0.1150     0.0335   -3.43  0.00061 ***
+## charSAM                      -0.2510     0.0308   -8.15  6.0e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -442,32 +428,19 @@ summary(regression, topics = 1)
 ## Topic 2:
 ## 
 ## Coefficients:
-##                             Estimate Std. Error t value             Pr(&gt;|t|)
-## (Intercept)                  0.31629    0.02627   12.04 &lt; 0.0000000000000002
-## movieThe Return of the King -0.04632    0.01838   -2.52                0.012
-## movieThe Two Towers          0.01102    0.01728    0.64                0.524
-## charFRODO                    0.13651    0.03166    4.31             0.000017
-## charGANDALF                 -0.05346    0.03258   -1.64                0.101
-## charGIMLI                    0.02569    0.03912    0.66                0.511
-## charGOLLUM                  -0.14073    0.03409   -4.13             0.000038
-## charLEGOLAS                 -0.02542    0.04409   -0.58                0.564
-## charMERRY                   -0.00247    0.03799   -0.06                0.948
-## charOther                    0.03094    0.02389    1.30                0.195
-## charPIPPIN                   0.01262    0.03397    0.37                0.710
-## charSAM                      0.02116    0.03067    0.69                0.490
-##                                
-## (Intercept)                 ***
-## movieThe Return of the King *  
-## movieThe Two Towers            
-## charFRODO                   ***
-## charGANDALF                    
-## charGIMLI                      
-## charGOLLUM                  ***
-## charLEGOLAS                    
-## charMERRY                      
-## charOther                      
-## charPIPPIN                     
-## charSAM                        
+##                             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                  0.31629    0.02627   12.04  &lt; 2e-16 ***
+## movieThe Return of the King -0.04632    0.01838   -2.52    0.012 *  
+## movieThe Two Towers          0.01102    0.01728    0.64    0.524    
+## charFRODO                    0.13651    0.03166    4.31  1.7e-05 ***
+## charGANDALF                 -0.05346    0.03258   -1.64    0.101    
+## charGIMLI                    0.02569    0.03912    0.66    0.511    
+## charGOLLUM                  -0.14073    0.03409   -4.13  3.8e-05 ***
+## charLEGOLAS                 -0.02542    0.04409   -0.58    0.564    
+## charMERRY                   -0.00247    0.03799   -0.06    0.948    
+## charOther                    0.03094    0.02389    1.30    0.195    
+## charPIPPIN                   0.01262    0.03397    0.37    0.710    
+## charSAM                      0.02116    0.03067    0.69    0.490    
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -484,32 +457,19 @@ summary(regression, topics = 1)
 ## Topic 3:
 ## 
 ## Coefficients:
-##                              Estimate Std. Error t value             Pr(&gt;|t|)
-## (Intercept)                  0.379540   0.026614   14.26 &lt; 0.0000000000000002
-## movieThe Return of the King -0.065841   0.017155   -3.84              0.00013
-## movieThe Two Towers         -0.115106   0.018120   -6.35     0.00000000026028
-## charFRODO                   -0.000351   0.031306   -0.01              0.99105
-## charGANDALF                  0.048076   0.032796    1.47              0.14283
-## charGIMLI                    0.089524   0.038393    2.33              0.01981
-## charGOLLUM                   0.312678   0.034811    8.98 &lt; 0.0000000000000002
-## charLEGOLAS                  0.057565   0.048128    1.20              0.23180
-## charMERRY                    0.091165   0.035883    2.54              0.01114
-## charOther                   -0.007891   0.024354   -0.32              0.74595
-## charPIPPIN                   0.102262   0.033542    3.05              0.00233
-## charSAM                      0.229294   0.030934    7.41     0.00000000000018
-##                                
-## (Intercept)                 ***
-## movieThe Return of the King ***
-## movieThe Two Towers         ***
-## charFRODO                      
-## charGANDALF                    
-## charGIMLI                   *  
-## charGOLLUM                  ***
-## charLEGOLAS                    
-## charMERRY                   *  
-## charOther                      
-## charPIPPIN                  ** 
-## charSAM                     ***
+##                              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                  0.379540   0.026614   14.26  &lt; 2e-16 ***
+## movieThe Return of the King -0.065841   0.017155   -3.84  0.00013 ***
+## movieThe Two Towers         -0.115106   0.018120   -6.35  2.6e-10 ***
+## charFRODO                   -0.000351   0.031306   -0.01  0.99105    
+## charGANDALF                  0.048076   0.032796    1.47  0.14283    
+## charGIMLI                    0.089524   0.038393    2.33  0.01981 *  
+## charGOLLUM                   0.312678   0.034811    8.98  &lt; 2e-16 ***
+## charLEGOLAS                  0.057565   0.048128    1.20  0.23180    
+## charMERRY                    0.091165   0.035883    2.54  0.01114 *  
+## charOther                   -0.007891   0.024354   -0.32  0.74595    
+## charPIPPIN                   0.102262   0.033542    3.05  0.00233 ** 
+## charSAM                      0.229294   0.030934    7.41  1.8e-13 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
