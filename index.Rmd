@@ -5,7 +5,7 @@ author:
   - "Jose Storopoli, PhD"
   - '`r knitr::include_graphics(c("images/UNINOVE_CIS.png", "images/UNINOVE_PPGA.png"), dpi = 400)`'
   - "[![CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg)](http://creativecommons.org/licenses/by-sa/4.0/)"
-date: "08/02/2021"
+date: "04/05/2021"
 output:
   xaringan::moon_reader:
     lib_dir: libs
