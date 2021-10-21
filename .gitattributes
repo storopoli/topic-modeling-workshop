@@ -1,6 +1,4 @@
 # Rmarkdown Stuff
-css/* linguist-generated
-libs/* linguist-generated
-
-# HTML
-*.html text
+*.css linguist-generated
+*.js linguist-generated
+*.html linguist-generated
